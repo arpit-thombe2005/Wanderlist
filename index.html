@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wanderlist - Your Travel Locations</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <h1 class="logo">
+                    <img src="public/logo.png" alt="Wanderlist Logo" class="logo-img">
+                    Wanderlist
+                </h1>
+                <!-- <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                    <span class="theme-icon">🌙</span>
+                </button> -->
+            </div>
+        </header>
+
+        <!-- Statistics Section -->
+        <div class="stats-section" id="statsSection">
+            <div class="stat-card">
+                <div class="stat-icon">🗺️</div>
+                <div class="stat-content">
+                    <div class="stat-value" id="totalLocations">0</div>
+                    <div class="stat-label">Total Locations</div>
+                </div>
+            </div>
+            <div class="stat-card stat-visited">
+                <div class="stat-icon">✅</div>
+                <div class="stat-content">
+                    <div class="stat-value" id="visitedLocations">0</div>
+                    <div class="stat-label">Visited</div>
+                </div>
+            </div>
+            <div class="stat-card stat-togo">
+                <div class="stat-icon">🎯</div>
+                <div class="stat-content">
+                    <div class="stat-value" id="togoLocations">0</div>
+                    <div class="stat-label">To Go</div>
+                </div>
+            </div>
+        </div>
+
+        <main>
+            <div class="controls-section">
+                <div class="add-location-form">
+                    <div class="form-row-main">
+                        <input 
+                            type="text" 
+                            id="locationInput" 
+                            placeholder="Enter location name..."
+                            class="location-input"
+                        >
+                        <button class="btn btn-primary" id="addBtn">Add Location</button>
+                        <button class="btn btn-secondary" id="toggleAdvancedBtn" title="More options">
+                            <span id="toggleIcon">▼</span>
+                        </button>
+                    </div>
+                    <div class="advanced-options" id="advancedOptions" style="display: none;">
+                        <div class="form-row">
+                            <div class="form-group-inline">
+                                <label for="addPriority">Priority</label>
+                                <select id="addPriority" class="form-input-sm">
+                                    <option value="high">High</option>
+                                    <option value="medium" selected>Medium</option>
+                                    <option value="low">Low</option>
+                                </select>
+                            </div>
+                            <div class="form-group-inline full-width">
+                                <label for="addDescription">Description (optional)</label>
+                                <textarea 
+                                    id="addDescription" 
+                                    class="form-textarea-sm" 
+                                    rows="2" 
+                                    placeholder="Add notes about this location..."
+                                ></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="filter-controls">
+                    <label for="filterSelect" class="filter-label">Filter:</label>
+                    <select id="filterSelect" class="filter-select">
+                        <option value="all">All Locations</option>
+                        <option value="visited">Visited</option>
+                        <option value="togo">To Go</option>
+                    </select>
+                </div>
+
+                <div class="sort-controls">
+                    <label for="sortSelect" class="sort-label">Sort by:</label>
+                    <select id="sortSelect" class="sort-select">
+                        <option value="date">Date Added</option>
+                        <option value="name">Name (A-Z)</option>
+                        <option value="priority">Priority</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="locations-container" id="locationsContainer">
+                <div class="empty-state" id="emptyState">
+                    <div class="empty-icon">🗺️</div>
+                    <h2>No locations yet</h2>
+                    <p>Start adding your travel destinations!</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Edit Modal -->
+    <div class="modal" id="editModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Edit Location</h2>
+                <button class="modal-close" id="closeModal" title="Close" aria-label="Close modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="editName">Location Name</label>
+                    <input type="text" id="editName" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label for="editDescription">Description (optional)</label>
+                    <textarea id="editDescription" class="form-textarea" rows="4" placeholder="Add notes about this location..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="editPriority">Priority</label>
+                    <select id="editPriority" class="form-input">
+                        <option value="high">High</option>
+                        <option value="medium">Medium</option>
+                        <option value="low">Low</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="editVisited" class="checkbox-input">
+                        <span class="checkbox-custom"></span>
+                        <span class="checkbox-text">Mark as visited</span>
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelEdit">Cancel</button>
+                <button class="btn btn-primary" id="saveEdit">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
+
