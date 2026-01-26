@@ -1005,7 +1005,7 @@ header {
     width: 90%;
     max-width: 550px;
     max-height: 85vh;           /* slightly smaller */
-    overflow: hidden;
+    overflow: auto;             /* allow scrolling inside modal when content is tall */
     box-shadow: var(--shadow-xl);
     border: 1px solid var(--border-color);
     animation: modalSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -1079,7 +1079,7 @@ button {
 .modal-body {
     padding: 2rem;
     overflow-y: auto;
-    max-height: calc(85vh - 160px); /* header + footer space */
+    max-height: none; /* footer is not sticky; let modal-content handle overflow */
 }
 
 .modal-footer {
@@ -1088,6 +1088,8 @@ button {
     gap: 1rem;
     padding: 2rem;
     border-top: 1px solid var(--border-color);
+    position: static; /* keep buttons at the end of the form */
+    background: transparent;
 }
 
 .form-group {
@@ -1195,12 +1197,33 @@ button {
         padding: 1rem;
     }
 
+    header {
+        margin-bottom: 1.5rem;
+    }
+
     .logo {
         font-size: 2rem;
     }
 
     .logo-icon {
         font-size: 2.5rem;
+    }
+
+    .header-content {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+
+    .header-actions {
+        width: 100%;
+        justify-content: space-between;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+
+    .user-info {
+        font-size: 0.85rem;
     }
 
     .stats-section {
@@ -1220,7 +1243,7 @@ button {
         display: flex;
         gap: 1rem;
         align-items: stretch;
-        flex-wrap: wrap;              /* 🔥 key */
+        flex-wrap: wrap;
     }
 
     .form-row-main .btn {
@@ -1244,9 +1267,22 @@ button {
         gap: 0.75rem;
     }
 
+    .search-controls,
+    .filter-controls,
+    .sort-controls {
+        width: 100%;
+        margin-bottom: 0.75rem;
+    }
+
+    .search-input,
+    .filter-select,
+    .sort-select {
+        width: 100%;
+    }
+
     .modal-content {
         width: 95%;
-        margin: 1rem;
+        margin: 1rem auto;
     }
 
     .form-group-inline {

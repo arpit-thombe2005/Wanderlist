@@ -373,13 +373,11 @@ function editLocation(id) {
     const editName = document.getElementById('editName');
     const editDescription = document.getElementById('editDescription');
     const editPriority = document.getElementById('editPriority');
-    const editVisited = document.getElementById('editVisited');
     const editModal = document.getElementById('editModal');
     
     if (editName) editName.value = location.name;
     if (editDescription) editDescription.value = location.description || '';
     if (editPriority) editPriority.value = location.priority;
-    if (editVisited) editVisited.checked = location.visited || false;
     if (editModal) editModal.classList.add('active');
 }
 
@@ -392,12 +390,11 @@ async function saveEdit() {
         const editName = document.getElementById('editName');
         const editDescription = document.getElementById('editDescription');
         const editPriority = document.getElementById('editPriority');
-        const editVisited = document.getElementById('editVisited');
         
         if (editName) location.name = editName.value.trim();
         if (editDescription) location.description = editDescription.value.trim();
         if (editPriority) location.priority = editPriority.value;
-        if (editVisited) location.visited = editVisited.checked;
+        // visited is toggled from the main list checkbox (not in edit modal)
         
         // Disable button during save
         const saveBtn = document.getElementById('saveEdit');

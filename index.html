@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wanderlist - Your Travel Locations</title>
+    <link rel="icon" type="image/png" href="public/logo.png">
     <link rel="stylesheet" href="styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -116,13 +117,13 @@
                 </div>
             </div>
 
-            <div class="locations-container" id="locationsContainer">
-                <div class="empty-state" id="emptyState">
-                    <div class="empty-icon">🗺️</div>
-                    <h2>No locations yet</h2>
-                    <p>Start adding your travel destinations!</p>
-                </div>
+            <div class="empty-state" id="emptyState">
+                <div class="empty-icon">🗺️</div>
+                <h2>No locations yet</h2>
+                <p>Start adding your travel destinations!</p>
             </div>
+
+            <div class="locations-container" id="locationsContainer"></div>
         </main>
     </div>
 
@@ -149,13 +150,6 @@
                         <option value="medium">Medium</option>
                         <option value="low">Low</option>
                     </select>
-                </div>
-                <div class="form-group">
-                    <label class="checkbox-label">
-                        <input type="checkbox" id="editVisited" class="checkbox-input">
-                        <span class="checkbox-custom"></span>
-                        <span class="checkbox-text">Mark as visited</span>
-                    </label>
                 </div>
             </div>
             <div class="modal-footer">
