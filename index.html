@@ -17,9 +17,10 @@
                     <img src="public/logo.png" alt="Wanderlist Logo" class="logo-img">
                     Wanderlist
                 </h1>
-                <!-- <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
-                    <span class="theme-icon">🌙</span>
-                </button> -->
+                <div class="header-actions">
+                    <span class="user-info" id="userInfo"></span>
+                    <button class="btn btn-secondary btn-sm" id="logoutBtn">Logout</button>
+                </div>
             </div>
         </header>
 
@@ -84,6 +85,16 @@
                             </div>
                         </div>
                     </div>
+                </div>
+
+                <div class="search-controls">
+                    <label for="searchInput" class="search-label">Search:</label>
+                    <input 
+                        type="text" 
+                        id="searchInput" 
+                        class="search-input" 
+                        placeholder="Search locations..."
+                    >
                 </div>
 
                 <div class="filter-controls">

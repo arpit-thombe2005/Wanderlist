@@ -1,65 +1,163 @@
 // Data structure for locations
 let locations = [];
+let allLocations = []; // Store all locations for search
 let currentEditId = null;
 let draggedElement = null;
 let draggedIndex = null;
 let currentFilter = 'all'; // 'all', 'visited', 'togo'
+let searchQuery = ''; // Search query
 
-// Initialize app
-document.addEventListener('DOMContentLoaded', () => {
-    loadLocations();
-    // initializeTheme();
+const API_BASE = window.location.origin;
+
+// Check authentication and initialize app
+document.addEventListener('DOMContentLoaded', async () => {
+    // Check if user is authenticated
+    const token = localStorage.getItem('authToken');
+    const username = localStorage.getItem('username');
+    
+    if (!token || !username) {
+        window.location.href = 'login.html';
+        return;
+    }
+    
+    // Display user info
+    const userInfo = document.getElementById('userInfo');
+    if (userInfo) {
+        userInfo.textContent = `Welcome, ${username}`;
+    }
+    
+    // Setup logout
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', () => {
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('userId');
+            localStorage.removeItem('username');
+            window.location.href = 'login.html';
+        });
+    }
+    
+    // Load locations from API
+    await loadLocations();
     setupEventListeners();
     updateStatistics();
     renderLocations();
 });
 
-// Load locations from localStorage
-function loadLocations() {
-    const saved = localStorage.getItem('wanderlist_locations');
-    if (saved) {
-        try {
-            locations = JSON.parse(saved);
-            // Migrate old locations to include visited property
-            locations = locations.map(loc => {
-                if (loc.visited === undefined) {
-                    loc.visited = false;
-                }
-                return loc;
-            });
-            saveLocations(); // Save migrated data
-        } catch (e) {
+// Get auth token
+function getAuthToken() {
+    return localStorage.getItem('authToken');
+}
+
+// API call helper
+async function apiCall(endpoint, method = 'GET', body = null) {
+    const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${getAuthToken()}`
+    };
+    
+    const options = {
+        method,
+        headers
+    };
+    
+    if (body) {
+        options.body = JSON.stringify(body);
+    }
+    
+    const response = await fetch(`${API_BASE}/.netlify/functions/${endpoint}`, options);
+    
+    if (response.status === 401) {
+        // Unauthorized - redirect to login
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('userId');
+        localStorage.removeItem('username');
+        window.location.href = 'login.html';
+        return null;
+    }
+    
+    return response;
+}
+
+// Load locations from API
+async function loadLocations() {
+    try {
+        const response = await apiCall('locations', 'GET');
+        if (!response) return;
+        
+        if (response.ok) {
+            const data = await response.json();
+            locations = data.locations || [];
+            allLocations = [...locations]; // Keep a copy for search
+        } else {
+            console.error('Failed to load locations');
             locations = [];
+            allLocations = [];
         }
+    } catch (error) {
+        console.error('Error loading locations:', error);
+        locations = [];
+        allLocations = [];
     }
 }
 
-//Save locations to localStorage
-function saveLocations() {
-    localStorage.setItem('wanderlist_locations', JSON.stringify(locations));
+// Save location to API
+async function saveLocationToAPI(location, method = 'POST') {
+    try {
+        const endpoint = 'locations';
+        const body = method === 'POST' 
+            ? {
+                name: location.name,
+                description: location.description || '',
+                priority: location.priority || 'medium',
+                visited: location.visited || false
+            }
+            : {
+                id: location.id,
+                name: location.name,
+                description: location.description || '',
+                priority: location.priority || 'medium',
+                visited: location.visited || false,
+                order: location.order
+            };
+        
+        const response = await apiCall(endpoint, method, body);
+        if (!response) return null;
+        
+        if (response.ok) {
+            const data = await response.json();
+            return data.location;
+        } else {
+            const error = await response.json();
+            alert(error.error || 'Failed to save location');
+            return null;
+        }
+    } catch (error) {
+        console.error('Error saving location:', error);
+        alert('Network error. Please try again.');
+        return null;
+    }
 }
 
-// Theme Management
-function initializeTheme() {
-    const savedTheme = localStorage.getItem('wanderlist_theme') || 'light';
-    document.documentElement.setAttribute('data-theme', savedTheme);
-    updateThemeIcon(savedTheme);
+// Delete location from API
+async function deleteLocationFromAPI(id) {
+    try {
+        const response = await apiCall('locations', 'DELETE', { id });
+        if (!response) return false;
+        
+        if (response.ok) {
+            return true;
+        } else {
+            const error = await response.json();
+            alert(error.error || 'Failed to delete location');
+            return false;
+        }
+    } catch (error) {
+        console.error('Error deleting location:', error);
+        alert('Network error. Please try again.');
+        return false;
+    }
 }
-
-// function toggleTheme() {
-//     const currentTheme = document.documentElement.getAttribute('data-theme');
-//     const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-//     document.documentElement.setAttribute('data-theme', newTheme);
-//     localStorage.setItem('wanderlist_theme', newTheme);
-//     updateThemeIcon(newTheme);
-// }
-
-// function updateThemeIcon(theme) {
-//     const icon = document.querySelector('.theme-icon');
-//     if (icon) {
-//         icon.textContent = theme === 'dark' ? '☀️' : '🌙';
-//     }
-// }
 
 // Event Listeners
 function setupEventListeners() {
@@ -86,6 +184,15 @@ function setupEventListeners() {
         toggleBtn.addEventListener('click', toggleAdvancedOptions);
     }
 
+    // Search
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+            searchQuery = e.target.value.toLowerCase().trim();
+            renderLocations();
+        });
+    }
+
     // Filter
     const filterSelect = document.getElementById('filterSelect');
     if (filterSelect) {
@@ -102,12 +209,6 @@ function setupEventListeners() {
             sortLocations(e.target.value);
         });
     }
-
-    // Theme toggle
-    // const themeToggle = document.getElementById('themeToggle');
-    // if (themeToggle) {
-    //     themeToggle.addEventListener('click', toggleTheme);
-    // }
 
     // Modal
     const closeModalBtn = document.getElementById('closeModal');
@@ -152,7 +253,7 @@ function toggleAdvancedOptions() {
 }
 
 // Add location
-function addLocation() {
+async function addLocation() {
     const input = document.getElementById('locationInput');
     if (!input) return;
     
@@ -170,7 +271,6 @@ function addLocation() {
     const priority = priorityEl ? priorityEl.value : 'medium';
 
     const newLocation = {
-        id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
         name: name,
         description: description,
         priority: priority,
@@ -179,49 +279,88 @@ function addLocation() {
         order: locations.length
     };
 
-    locations.push(newLocation);
-    saveLocations();
-    
-    // Clear form
-    input.value = '';
-    if (descriptionEl) descriptionEl.value = '';
-    if (priorityEl) priorityEl.value = 'medium';
-    
-    // Hide advanced options
-    const options = document.getElementById('advancedOptions');
-    if (options && options.style.display !== 'none') {
-        toggleAdvancedOptions();
+    // Disable button during save
+    const addBtn = document.getElementById('addBtn');
+    if (addBtn) {
+        addBtn.disabled = true;
+        addBtn.textContent = 'Adding...';
     }
-    
-    // Render immediately for real-time update
-    requestAnimationFrame(() => {
-        updateStatistics();
-        renderLocations();
-        if (input) input.focus();
-    });
-}
 
-// Remove location
-function removeLocation(id) {
-    if (confirm('Are you sure you want to remove this location?')) {
-        locations = locations.filter(loc => loc.id !== id);
-        saveLocations();
-        // Real-time update
+    const savedLocation = await saveLocationToAPI(newLocation, 'POST');
+    
+    if (savedLocation) {
+        locations.push(savedLocation);
+        allLocations.push(savedLocation);
+        
+        // Clear form
+        input.value = '';
+        if (descriptionEl) descriptionEl.value = '';
+        if (priorityEl) priorityEl.value = 'medium';
+        
+        // Hide advanced options
+        const options = document.getElementById('advancedOptions');
+        if (options && options.style.display !== 'none') {
+            toggleAdvancedOptions();
+        }
+        
+        // Render immediately
         requestAnimationFrame(() => {
             updateStatistics();
             renderLocations();
+            if (input) input.focus();
         });
+    }
+    
+    // Re-enable button
+    if (addBtn) {
+        addBtn.disabled = false;
+        addBtn.textContent = 'Add Location';
+    }
+}
+
+// Remove location
+async function removeLocation(id) {
+    if (confirm('Are you sure you want to remove this location?')) {
+        const success = await deleteLocationFromAPI(id);
+        
+        if (success) {
+            locations = locations.filter(loc => loc.id !== id);
+            allLocations = allLocations.filter(loc => loc.id !== id);
+            
+            // Real-time update
+            requestAnimationFrame(() => {
+                updateStatistics();
+                renderLocations();
+            });
+        }
     }
 }
 
 // Toggle visited status
-function toggleVisited(id) {
+async function toggleVisited(id) {
     const location = locations.find(loc => loc.id === id);
     if (location) {
         location.visited = !location.visited;
-        saveLocations();
-        updateStatistics();
-        renderLocations();
+        
+        // Update in API
+        const updated = await saveLocationToAPI(location, 'PUT');
+        if (updated) {
+            // Update in local arrays
+            const index = locations.findIndex(loc => loc.id === id);
+            if (index !== -1) {
+                locations[index] = updated;
+            }
+            const allIndex = allLocations.findIndex(loc => loc.id === id);
+            if (allIndex !== -1) {
+                allLocations[allIndex] = updated;
+            }
+            
+            updateStatistics();
+            renderLocations();
+        } else {
+            // Revert on error
+            location.visited = !location.visited;
+        }
     }
 }
 
@@ -245,7 +384,7 @@ function editLocation(id) {
 }
 
 // Save edit
-function saveEdit() {
+async function saveEdit() {
     if (!currentEditId) return;
 
     const location = locations.find(loc => loc.id === currentEditId);
@@ -259,15 +398,41 @@ function saveEdit() {
         if (editDescription) location.description = editDescription.value.trim();
         if (editPriority) location.priority = editPriority.value;
         if (editVisited) location.visited = editVisited.checked;
+        
+        // Disable button during save
+        const saveBtn = document.getElementById('saveEdit');
+        if (saveBtn) {
+            saveBtn.disabled = true;
+            saveBtn.textContent = 'Saving...';
+        }
+        
+        const updated = await saveLocationToAPI(location, 'PUT');
+        
+        if (updated) {
+            // Update in local arrays
+            const index = locations.findIndex(loc => loc.id === currentEditId);
+            if (index !== -1) {
+                locations[index] = updated;
+            }
+            const allIndex = allLocations.findIndex(loc => loc.id === currentEditId);
+            if (allIndex !== -1) {
+                allLocations[allIndex] = updated;
+            }
+            
+            // Real-time update
+            requestAnimationFrame(() => {
+                updateStatistics();
+                renderLocations();
+            });
+            closeModal();
+        }
+        
+        // Re-enable button
+        if (saveBtn) {
+            saveBtn.disabled = false;
+            saveBtn.textContent = 'Save Changes';
+        }
     }
-
-    saveLocations();
-    // Real-time update
-    requestAnimationFrame(() => {
-        updateStatistics();
-        renderLocations();
-    });
-    closeModal();
 }
 
 // Close modal
@@ -300,7 +465,7 @@ function sortLocations(sortBy) {
     
     // Update locations array
     locations = sortedLocations;
-    saveLocations();
+    
     // Real-time update
     requestAnimationFrame(() => {
         updateStatistics();
@@ -330,18 +495,28 @@ function renderLocations() {
 
     if (!container) return;
 
-    // Filter locations based on current filter
-    let filteredLocations = locations;
+    // Apply search filter
+    let filteredLocations = searchQuery 
+        ? allLocations.filter(loc => 
+            loc.name.toLowerCase().includes(searchQuery) ||
+            (loc.description && loc.description.toLowerCase().includes(searchQuery))
+          )
+        : allLocations;
+
+    // Apply status filter
     if (currentFilter === 'visited') {
-        filteredLocations = locations.filter(loc => loc.visited);
+        filteredLocations = filteredLocations.filter(loc => loc.visited);
     } else if (currentFilter === 'togo') {
-        filteredLocations = locations.filter(loc => !loc.visited);
+        filteredLocations = filteredLocations.filter(loc => !loc.visited);
     }
 
     if (filteredLocations.length === 0) {
         if (emptyState) {
             emptyState.classList.remove('hidden');
-            if (currentFilter === 'visited') {
+            if (searchQuery) {
+                emptyState.querySelector('h2').textContent = 'No locations found';
+                emptyState.querySelector('p').textContent = 'Try adjusting your search or filter.';
+            } else if (currentFilter === 'visited') {
                 emptyState.querySelector('h2').textContent = 'No visited locations yet';
                 emptyState.querySelector('p').textContent = 'Mark locations as visited to see them here!';
             } else if (currentFilter === 'togo') {
@@ -476,7 +651,7 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
-// Drag and Drop functionality - Complete rewrite
+// Drag and Drop functionality
 function initializeDragAndDrop() {
     const cards = document.querySelectorAll('.location-card');
     
@@ -585,7 +760,7 @@ function initializeDragAndDrop() {
             return false;
         });
         
-        newCard.addEventListener('drop', (e) => {
+        newCard.addEventListener('drop', async (e) => {
             e.preventDefault();
             e.stopPropagation();
             
@@ -608,7 +783,14 @@ function initializeDragAndDrop() {
                             loc.order = idx;
                         });
                         
-                        saveLocations();
+                        // Update allLocations too
+                        allLocations = [...locations];
+                        
+                        // Save order to API
+                        for (const loc of locations) {
+                            await saveLocationToAPI(loc, 'PUT');
+                        }
+                        
                         renderLocations();
                     }
                 }
