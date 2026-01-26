@@ -115,7 +115,11 @@ exports.handler = async (event) => {
                 'Access-Control-Allow-Origin': '*',
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ error: 'Internal server error' })
+            body: JSON.stringify({
+                error: 'Internal server error',
+                details: error && error.message ? error.message : String(error),
+                hint: 'Check Neon DATABASE_URL and ensure the `users` table exists in your database.'
+            })
         };
     }
 };
