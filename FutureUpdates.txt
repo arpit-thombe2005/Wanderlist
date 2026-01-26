@@ -1,0 +1,104 @@
+High priority — core features
+
+1. Location details
+
+    Coordinates (lat/lng) with map preview
+    Photos (upload or link)
+    Visit dates (planned vs actual)
+    Notes/journal entries per location
+    Tags/categories (beach, mountain, city, etc.)
+
+2. Sharing & collaboration
+
+    Share lists with friends/family
+    Public lists (view-only)
+    Comments on shared locations
+    Collaborative planning
+
+3. Maps integration
+
+    Map view of all locations
+    Route planning between locations
+    Distance calculations
+    Integration with Google Maps/Mapbox
+
+4. Travel planning
+
+    Trip/itinerary grouping
+    Budget tracking per trip
+    Weather info
+    Time zone info
+    Best time to visit
+    Medium priority — UX enhancements
+
+5. Advanced search & filters
+
+    Filter by tags, priority, date range
+    Saved filter presets
+    Location autocomplete (Google Places API)
+    Duplicate detection
+
+6. Data import/export
+
+    Import from CSV/JSON
+    Export to PDF/itinerary
+    Backup/restore
+    Import from Google Maps saved places
+
+7. Statistics & insights
+
+    Visited vs planned ratio
+    Most visited countries/regions
+    Travel timeline visualization
+    Achievement badges
+
+8. Mobile app
+
+    PWA for offline use
+    Native mobile apps (React Native)
+    Push notifications for trip reminders
+    Location-based reminders
+    Nice to have — polish
+
+9. Social features
+    
+    Public profile with travel stats
+    Follow other travelers
+    Inspiration feed
+    Travel recommendations
+
+10. Integrations
+
+    Calendar sync (Google Calendar, iCal)
+    Email reminders
+    Social media sharing
+    Travel booking links (hotels, flights)
+
+11. Advanced UI
+    
+    Dark mode toggle
+    Custom themes
+    List templates
+    Drag-and-drop trip planning board
+
+12. Performance & tech
+    
+    Image optimization/CDN
+    Caching strategies
+    Real-time sync across devices
+    Offline mode with sync
+    Quick wins (easy to add)
+    Email verification for signup
+    Profile page (avatar, bio)
+    Export to CSV
+    Print-friendly view
+    Keyboard shortcuts
+    Bulk operations (delete multiple, change priority)
+    Location templates (pre-filled common fields)
+
+Recommended next steps
+
+    Maps integration — adds visual value
+    Photos — makes locations more engaging
+    Trip grouping — better organization
+    Export/backup — data portability
