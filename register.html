@@ -35,6 +35,17 @@
         .auth-header .logo {
             font-size: 2.5rem;
             margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            line-height: 1.1;
+        }
+        /* Override global .logo-img sizing (it's 3em in styles.css, too big for auth pages) */
+        .auth-header .logo .logo-img {
+            height: 48px;
+            width: auto;
         }
         .auth-header h2 {
             font-size: 1.75rem;
@@ -113,6 +124,26 @@
         }
         .success-message.show {
             display: block;
+        }
+
+        @media (max-width: 480px) {
+            .auth-container {
+                padding: 1rem;
+            }
+            .auth-card {
+                padding: 2rem 1.5rem;
+            }
+            .auth-header .logo {
+                font-size: 2rem;
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            .auth-header .logo .logo-img {
+                height: 44px;
+            }
+            .auth-header h2 {
+                font-size: 1.5rem;
+            }
         }
     </style>
 </head>
