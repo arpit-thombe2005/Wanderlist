@@ -1,5 +1,10 @@
-// Database connection utility for Neon PostgreSQL
-const { Pool } = require('@neondatabase/serverless');
+// Database connection utility for Neon PostgreSQL (Netlify Functions / Node)
+const ws = require('ws');
+const { Pool, neonConfig } = require('@neondatabase/serverless');
+
+// Netlify/Node doesn't provide a global WebSocket constructor.
+// Neon serverless driver needs it for pooled connections.
+neonConfig.webSocketConstructor = ws;
 
 let pool = null;
 
