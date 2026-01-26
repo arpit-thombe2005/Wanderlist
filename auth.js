@@ -13,6 +13,13 @@ function showError(elementId, message) {
     }
 }
 
+function formatApiError(data, fallback) {
+    if (!data) return fallback;
+    if (typeof data === 'string') return data;
+    if (data.details) return `${data.error || fallback}\n${data.details}`;
+    return data.error || fallback;
+}
+
 function showSuccess(elementId, message) {
     const element = document.getElementById(elementId);
     if (element) {
@@ -70,7 +77,7 @@ if (document.getElementById('registerForm')) {
                     window.location.href = 'login.html';
                 }, 1500);
             } else {
-                showError('errorMessage', data.error || 'Registration failed');
+                showError('errorMessage', formatApiError(data, 'Registration failed'));
                 btn.disabled = false;
                 btn.textContent = 'Create Account';
             }
@@ -120,7 +127,7 @@ if (document.getElementById('loginForm')) {
                     window.location.href = 'index.html';
                 }, 1000);
             } else {
-                showError('errorMessage', data.error || 'Login failed');
+                showError('errorMessage', formatApiError(data, 'Login failed'));
                 btn.disabled = false;
                 btn.textContent = 'Sign In';
             }
