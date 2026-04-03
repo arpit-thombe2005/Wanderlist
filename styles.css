@@ -3,6 +3,9 @@
 }
 
 @media (max-width: 768px) {
+    .form-row-main {
+        flex-wrap: wrap;
+    }
     .form-row-main .btn {
         flex: 1 1 100%;
     }
@@ -16,13 +19,20 @@
 
 @media (max-width: 768px) {
     .location-header {
-        flex-direction: column;
+        flex-direction: row;
+        flex-wrap: wrap;
         align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    .location-name {
+        font-size: 1.25rem;
+        min-width: 0;
+        word-wrap: break-word;
     }
 
     .location-actions {
-        width: 100%;
-        justify-content: flex-end;
+        margin-left: auto;
     }
 }
 
@@ -46,7 +56,7 @@
     }
 }
 
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 :root {
     /* Light Theme - Modern & Vibrant - Enhanced Readability */
@@ -75,7 +85,7 @@
     --gradient-success: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
 }
 
-/* [data-theme="dark"] {
+[data-theme="dark"] {
     /* Dark Theme - Sleek & Modern */
     --bg-primary: #0f0f23;
     --bg-secondary: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
@@ -99,8 +109,7 @@
     --warning: #fbbf24;
     --gradient-primary: linear-gradient(135deg, #818cf8 0%, #a78bfa 100%);
     --gradient-secondary: linear-gradient(135deg, #f472b6 0%, #ec4899 100%);
-    --gradient-success: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
-} */
+}
 
 * {
     margin: 0;
@@ -109,7 +118,7 @@
 }
 
 body {
-    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     background: var(--bg-secondary);
     background-attachment: fixed;
     color: var(--text-primary);
@@ -135,11 +144,11 @@ body::before {
     z-index: 0;
 }
 
-/* [data-theme="dark"] body::before {
+[data-theme="dark"] body::before {
     background: 
         radial-gradient(circle at 20% 50%, rgba(129, 140, 248, 0.05) 0%, transparent 50%),
         radial-gradient(circle at 80% 80%, rgba(167, 139, 250, 0.05) 0%, transparent 50%);
-} */
+}
 
 .container {
     max-width: 1200px;
@@ -167,8 +176,8 @@ header {
     background: var(--bg-glass);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border: 1.5px solid var(--border-color);
-    border-radius: 20px;
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
     padding: 1.5rem;
     display: flex;
     align-items: center;
@@ -338,7 +347,7 @@ header {
 }
 
 .theme-toggle:hover {
-    transform: scale(1.1) rotate(180deg);
+    transform: translateY(-2px) rotate(180deg);
     box-shadow: var(--shadow-lg);
     border-color: var(--accent-primary);
 }
@@ -348,10 +357,10 @@ header {
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     padding: 2rem;
-    border-radius: 24px;
-    box-shadow: var(--shadow-lg);
+    border-radius: 16px;
+    box-shadow: var(--shadow-md);
     margin-bottom: 2rem;
-    border: 1.5px solid var(--border-color);
+    border: 1px solid var(--border-color);
     animation: fadeInUp 0.6s ease 0.2s both;
 }
 
@@ -593,22 +602,18 @@ header {
     box-shadow: var(--shadow-md);
 }
 
-.btn::before {
+.btn::after {
     content: '';
     position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 0;
-    height: 0;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.2);
-    transform: translate(-50%, -50%);
-    transition: width 0.6s, height 0.6s;
+    inset: 0;
+    background: rgba(255, 255, 255, 0);
+    transition: background 0.3s ease;
+    border-radius: inherit;
+    pointer-events: none;
 }
 
-.btn:hover::before {
-    width: 300px;
-    height: 300px;
+.btn:hover::after {
+    background: rgba(255, 255, 255, 0.1);
 }
 
 .btn-primary {
@@ -685,14 +690,13 @@ header {
     background: var(--bg-glass);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border: 1.5px solid var(--border-color);
-    border-radius: 20px;
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
     padding: 0;
     box-shadow: var(--shadow-lg);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     cursor: grab;
     position: relative;
-    overflow: hidden;
     display: flex;
     animation: cardSlideIn 0.4s ease both;
 }
@@ -715,6 +719,8 @@ header {
     left: 0;
     width: 100%;
     height: 4px;
+    border-top-left-radius: inherit;
+    border-top-right-radius: inherit;
     background: var(--gradient-primary);
     transform: scaleX(0);
     transform-origin: left;

@@ -4,6 +4,8 @@
   "description": "Travel locations tracker with authentication",
   "main": "index.html",
   "scripts": {
+    "dev": "npx netlify dev",
+    "start": "npx netlify dev",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
